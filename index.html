@@ -16,8 +16,8 @@
         margin-top: 30px;
         color: #333;
     }
-    #startBtn {
-        margin-top: 50px;
+    #startBtn, #restartBtn {
+        margin-top: 20px;
         padding: 15px 30px;
         font-size: 20px;
         background: #ffb6c1;
@@ -49,12 +49,14 @@
         border-radius: 10px;
     }
     #game { display: none; }
+    #restartBtn { display: none; }
 </style>
 </head>
 <body>
 
 <h1>🎀🧢 Charles Baby Game 🧢🎀</h1>
 <button id="startBtn">Start Game</button>
+<button id="restartBtn">Play Again</button>
 <button id="muteBtn" style="display:none;">🔊</button>
 
 <div id="game">
@@ -88,7 +90,7 @@
 </audio>
 
 <script>
-let currentPlayer = '🎀'; // pink bow starts
+let currentPlayer = '🎀'; 
 let gameActive = true;
 let board = [['','',''],['','',''],['','','']];
 let muted = false;
@@ -97,6 +99,7 @@ const bgMusic = document.getElementById('bgMusic');
 const popSound = document.getElementById('popSound');
 const winSound = document.getElementById('winSound');
 const muteBtn = document.getElementById('muteBtn');
+const restartBtn = document.getElementById('restartBtn');
 
 document.getElementById('startBtn').addEventListener('click', () => {
     bgMusic.volume = 0.3;
@@ -105,6 +108,8 @@ document.getElementById('startBtn').addEventListener('click', () => {
     document.getElementById('game').style.display = 'block';
     muteBtn.style.display = 'inline';
 });
+
+restartBtn.addEventListener('click', resetGame);
 
 muteBtn.addEventListener('click', () => {
     muted = !muted;
@@ -119,18 +124,27 @@ function makeMove(row, col) {
     board[row][col] = currentPlayer;
     document.querySelectorAll('tr')[row].children[col].textContent = currentPlayer;
     if (!muted) popSound.play();
+
     if (checkPinkBowWin()) {
         gameActive = false;
         if (!muted) winSound.play();
         confetti();
         setTimeout(() => alert("🎀 It's a Girl! 🎀"), 100);
+        // no restartBtn shown; game ends here
         return;
     }
+
+    if (isBoardFull()) {
+        gameActive = false;
+        setTimeout(() => alert("Try again!"), 100);
+        restartBtn.style.display = 'inline';
+        return;
+    }
+
     currentPlayer = (currentPlayer === '🎀') ? '🧢' : '🎀';
 }
 
 function checkPinkBowWin() {
-    // rows, cols, diagonals
     for (let i=0;i<3;i++)
         if (board[i][0]=='🎀' && board[i][1]=='🎀' && board[i][2]=='🎀') return true;
     for (let i=0;i<3;i++)
@@ -138,6 +152,18 @@ function checkPinkBowWin() {
     if (board[0][0]=='🎀' && board[1][1]=='🎀' && board[2][2]=='🎀') return true;
     if (board[0][2]=='🎀' && board[1][1]=='🎀' && board[2][0]=='🎀') return true;
     return false;
+}
+
+function isBoardFull() {
+    return board.flat().every(cell => cell !== '');
+}
+
+function resetGame() {
+    board = [['','',''],['','',''],['','','']];
+    gameActive = true;
+    currentPlayer = '🎀';
+    document.querySelectorAll('td').forEach(cell => cell.textContent = '');
+    restartBtn.style.display = 'none';
 }
 
 function confetti() {
@@ -153,7 +179,6 @@ function confetti() {
         conf.addEventListener('animationend', ()=>conf.remove());
     }
 }
-
 </script>
 <style>
 @keyframes fall {
