@@ -119,31 +119,31 @@ function makeMove(row, col) {
     board[row][col] = currentPlayer;
     document.querySelectorAll('tr')[row].children[col].textContent = currentPlayer;
     if (!muted) popSound.play();
-    if (checkWin()) {
+    if (checkPinkBowWin()) {
         gameActive = false;
         if (!muted) winSound.play();
         confetti();
-        setTimeout(() => alert(currentPlayer + ' wins!'), 100);
+        setTimeout(() => alert("🎀 It's a Girl! 🎀"), 100);
         return;
     }
     currentPlayer = (currentPlayer === '🎀') ? '🧢' : '🎀';
 }
 
-function checkWin() {
+function checkPinkBowWin() {
     // rows, cols, diagonals
     for (let i=0;i<3;i++)
-        if (board[i][0] && board[i][0]==board[i][1] && board[i][1]==board[i][2]) return true;
+        if (board[i][0]=='🎀' && board[i][1]=='🎀' && board[i][2]=='🎀') return true;
     for (let i=0;i<3;i++)
-        if (board[0][i] && board[0][i]==board[1][i] && board[1][i]==board[2][i]) return true;
-    if (board[0][0] && board[0][0]==board[1][1] && board[1][1]==board[2][2]) return true;
-    if (board[0][2] && board[0][2]==board[1][1] && board[1][1]==board[2][0]) return true;
+        if (board[0][i]=='🎀' && board[1][i]=='🎀' && board[2][i]=='🎀') return true;
+    if (board[0][0]=='🎀' && board[1][1]=='🎀' && board[2][2]=='🎀') return true;
+    if (board[0][2]=='🎀' && board[1][1]=='🎀' && board[2][0]=='🎀') return true;
     return false;
 }
 
 function confetti() {
     for(let i=0;i<100;i++) {
         let conf = document.createElement('div');
-        conf.textContent = (Math.random()>0.5) ? '🎀' : '🧢';
+        conf.textContent = '🎀';
         conf.style.position = 'fixed';
         conf.style.left = Math.random()*100 + 'vw';
         conf.style.top = '-2em';
